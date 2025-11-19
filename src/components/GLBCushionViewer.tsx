@@ -37,6 +37,24 @@ function Model({
   const meshRef = useRef<any>(null);
   const [texturesLoaded, setTexturesLoaded] = useState(false);
 
+  // Calculate dynamic scale based on dimensions (for zitkussen-strak)
+  // Reference model dimensions: 129cm x 60cm x 12cm
+  const calculateDynamicScale = () => {
+    const referenceWidth = 129;
+    const referenceHeight = 60;
+    const referenceDepth = 12;
+
+    const scaleX = (width || 129) / referenceWidth;
+    const scaleY = (height || 60) / referenceHeight;
+    const scaleZ = (depth || 12) / referenceDepth;
+
+    return {
+      x: scaleX,
+      y: scaleY,
+      z: scaleZ,
+    };
+  };
+
   // Calculate texture repeat based on cushion dimensions
   // Assume texture represents ~20cm in real world
   const getTextureRepeat = () => {
@@ -171,6 +189,14 @@ function Model({
     });
 
     setTexturesLoaded(true);
+
+    // Apply dynamic scaling based on dimensions
+    if (meshRef.current) {
+      const scale = calculateDynamicScale();
+      meshRef.current.scale.x = scale.x * 1.5; // 1.5 is base scale
+      meshRef.current.scale.y = scale.y * 1.5;
+      meshRef.current.scale.z = scale.z * 1.5;
+    }
   }, [
     gltf,
     selectedFabric?.color,
@@ -192,9 +218,16 @@ function Model({
     }
   });
 
+  // Get the initial scale to display in the primitive
+  const initialScale = calculateDynamicScale();
+  const baseScale = 1.5;
+
   return (
-    <group ref={meshRef}>
-      <primitive object={gltf.scene} scale={1.5} />
+    <group
+      ref={meshRef}
+      scale={[baseScale * initialScale.x, baseScale * initialScale.y, baseScale * initialScale.z]}
+    >
+      <primitive object={gltf.scene} />
     </group>
   );
 }
