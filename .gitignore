@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Environment variables - NEVER commit these!
+.env
+.env.local
+.env.*.local
+
+# Build outputs
+dist/
+build/
+
+# Development
+.DS_Store
+.vscode/
+.idea/
+
+# Logs
+*.log
+npm-debug.log*
